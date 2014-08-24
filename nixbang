@@ -4,6 +4,19 @@ import subprocess
 import sys
 
 
+HELP = """Usage: nixbang SCRIPT_FILE
+
+nixbang is designed to be used as the shebang of a script. It will
+execute the script with the given command in a nix-shell environment
+with the given packages.
+
+Example:
+
+  #!/usr/bin/env nixbang
+  # command = python3
+  # packages = python34 python34Packages.requests tree
+"""
+
 def read_file(path):
     def options():
         with open(path) as f:
@@ -16,7 +29,13 @@ def read_file(path):
 
 
 def main():
-    target = sys.argv[1]
+    try:
+        target = sys.argv[1]
+    except IndexError:
+        target = '-h'
+    if target in ('-h', '--help'):
+        print(HELP)
+        return
     options = read_file(target)
     command = '%s %s' % (options['command'], target)
     subprocess.call(['nix-shell', '--command', command,
