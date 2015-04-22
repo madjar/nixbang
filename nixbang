@@ -37,7 +37,11 @@ def main():
         print(HELP)
         return
     options = read_file(target)
-    command = '%s %s' % (options['command'], target)
+    args = ''
+    if len(sys.argv) > 1:
+       args = ' '.join(sys.argv[2:])
+
+    command = '%s %s %s' % (options['command'], target, args)
     subprocess.call(['nix-shell', '--command', command,
                      '-p'] + options['packages'].split())
 
